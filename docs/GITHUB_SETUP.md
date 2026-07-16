@@ -304,9 +304,15 @@ Sashiko processes the following fields from GitHub's `pull_request` webhook:
     "base": {
       "sha": "def456..."
     }
+  },
+  "repository": {
+    "id": 123456789
   }
 }
 ```
+
+The numeric `repository.id` is required to create a globally unique patchset
+slug in the form `github-<repository-id>-<pull-request-number>`.
 
 Supported actions: `opened`, `reopened`, `synchronize` (new commits pushed)
 

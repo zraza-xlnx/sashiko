@@ -24,6 +24,7 @@ read -r -d '' PAYLOAD <<'EOF'
     }
   },
   "project": {
+    "id": 845291,
     "git_http_url": "https://gitlab.example.com/org/project.git"
   }
 }

@@ -151,6 +151,16 @@ GitLab sends webhooks with:
 - `X-Gitlab-Event: Merge Request Hook`
 - `Content-Type: application/json`
 
+**Required payload fields:**
+- `project.id` - Numeric project ID used to create the patchset slug
+- `project.git_http_url` - Git repository URL
+- `object_attributes.iid` - Project-scoped merge request number
+- `object_attributes.last_commit.id` - Merge request head commit
+- `object_attributes.diff_refs.base_sha` - Merge request base commit
+
+The generated slug has the form
+`gitlab-<project-id>-<merge-request-number>`.
+
 **Actions Handled:**
 - `open` - New MR created
 - `update` - MR updated with new commits

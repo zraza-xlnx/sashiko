@@ -1125,10 +1125,12 @@ async fn forge_webhook(
     let commit_range = format!("{}..{}", metadata.base_sha, metadata.head_sha);
     let placeholder_id = format!("mr-{}-{}", metadata.pr_number, commit_range);
 
-    let slug = metadata.pr_url.as_ref().map(|url| {
-        let repo = crate::forge::extract_repo_name_from_url(url);
-        format!("{}-{}", repo, metadata.pr_number)
-    });
+    let slug = format!(
+        "{}-{}-{}",
+        provider.to_ascii_lowercase(),
+        metadata.repo_id,
+        metadata.pr_number
+    );
 
     state
         .db
@@ -1140,7 +1142,7 @@ async fn forge_webhook(
             metadata.pr_url.as_deref(),
             Some(subject),
             Some(metadata.pr_number),
-            slug.as_deref(),
+            Some(slug.as_str()),
         )
         .await
         .map_err(|e| {

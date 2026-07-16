@@ -57,6 +57,7 @@ else
 fi
 git_http_url=$(echo "$project_data" | jq -r '.http_url_to_repo // empty')
 web_url=$(echo "$project_data" | jq -r '.web_url // empty')
+project_id=$(echo "$project_data" | jq -r '.id // empty')
 
 if [ -z "$iid" ] || [ -z "$base_sha" ] || [ -z "$head_sha" ]; then
     echo "Error: Could not fetch MR details. Check MR number and network connection."
@@ -71,8 +72,8 @@ if [ -z "$iid" ] || [ -z "$base_sha" ] || [ -z "$head_sha" ]; then
     exit 1
 fi
 
-if [ -z "$git_http_url" ]; then
-    echo "Error: Could not fetch repository URL from project API."
+if ! [[ "$project_id" =~ ^[0-9]+$ ]] || [ -z "$git_http_url" ]; then
+    echo "Error: Could not fetch valid GitLab project details."
     echo "Project API Response:"
     echo "$project_data" | jq . 2>/dev/null || echo "$project_data"
     if echo "$project_data" | grep -q "404 Project Not Found" && [ -z "$GITLAB_TOKEN" ]; then
@@ -116,6 +117,7 @@ read -r -d '' PAYLOAD <<EOF || true
     }
   },
   "project": {
+    "id": ${project_id},
     "git_http_url": "${git_http_url}",
     "web_url": "${web_url}"
   }

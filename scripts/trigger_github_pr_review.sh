@@ -39,11 +39,19 @@ state=$(echo "$pr_data" | jq -r '.state // empty')
 # Fetch repository details
 repo_data=$(curl -s $AUTH_HEADER "${GITHUB_API}/repos/${REPO}")
 clone_url=$(echo "$repo_data" | jq -r '.clone_url // empty')
+repo_id=$(echo "$repo_data" | jq -r '.id // empty')
 
 if [ -z "$number" ] || [ -z "$base_sha" ] || [ -z "$head_sha" ]; then
     echo "Error: Could not fetch PR details. Check PR number and network connection."
     echo "API Response:"
     echo "$pr_data" | jq . 2>/dev/null || echo "$pr_data"
+    exit 1
+fi
+
+if ! [[ "$repo_id" =~ ^[0-9]+$ ]] || [ -z "$clone_url" ]; then
+    echo "Error: Could not fetch valid GitHub repository details."
+    echo "Repository API Response:"
+    echo "$repo_data" | jq . 2>/dev/null || echo "$repo_data"
     exit 1
 fi
 
@@ -70,6 +78,7 @@ read -r -d '' PAYLOAD <<EOF || true
     }
   },
   "repository": {
+    "id": ${repo_id},
     "clone_url": "${clone_url}"
   }
 }

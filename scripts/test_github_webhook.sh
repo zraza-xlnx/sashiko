@@ -20,6 +20,7 @@ read -r -d '' PAYLOAD <<'EOF'
     }
   },
   "repository": {
+    "id": 109791437,
     "clone_url": "https://github.com/owner/repo.git"
   }
 }

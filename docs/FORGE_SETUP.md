@@ -86,10 +86,15 @@ The webhook must provide:
     "url": "<web URL to PR/MR>"
   },
   "repository": {
+    "id": "<numeric repository or project ID>",
     "clone_url": "<git clone URL>"
   }
 }
 ```
+
+For GitHub, the ID is read from `repository.id`. For GitLab, the equivalent
+required value is `project.id`. Sashiko uses the provider, repository/project
+ID, and PR/MR number to construct the patchset slug.
 
 **Recommended additional fields:**
 - Source branch name

@@ -21,6 +21,7 @@ use std::sync::Arc;
 /// Metadata extracted from forge webhook
 #[derive(Debug, Clone)]
 pub struct ForgeMetadata {
+    pub repo_id: i64,
     pub repo_url: Option<String>,
     pub base_sha: String,
     pub head_sha: String,
@@ -72,6 +73,10 @@ impl ForgeProvider for GitHubForge {
             .ok_or(StatusCode::BAD_REQUEST)?
             .to_string();
 
+        let repo_id = payload["repository"]["id"]
+            .as_i64()
+            .ok_or(StatusCode::BAD_REQUEST)?;
+
         let pr = &payload["pull_request"];
         if pr.is_null() {
             return Err(StatusCode::BAD_REQUEST);
@@ -97,6 +102,7 @@ impl ForgeProvider for GitHubForge {
             .map(|s| s.to_string());
 
         let metadata = ForgeMetadata {
+            repo_id,
             repo_url,
             base_sha,
             head_sha,
@@ -135,6 +141,10 @@ impl ForgeProvider for GitLabForge {
 
         let payload: Value = serde_json::from_slice(body).map_err(|_| StatusCode::BAD_REQUEST)?;
 
+        let repo_id = payload["project"]["id"]
+            .as_i64()
+            .ok_or(StatusCode::BAD_REQUEST)?;
+
         let action = payload["object_kind"]
             .as_str()
             .ok_or(StatusCode::BAD_REQUEST)?
@@ -165,6 +175,7 @@ impl ForgeProvider for GitLabForge {
             .map(|s| s.to_string());
 
         let metadata = ForgeMetadata {
+            repo_id,
             repo_url,
             base_sha,
             head_sha,
@@ -175,16 +186,6 @@ impl ForgeProvider for GitLabForge {
 
         Ok((action, metadata))
     }
-}
-
-/// Extract repository name from a URL
-pub fn extract_repo_name_from_url(url: &str) -> String {
-    url.trim_end_matches('/')
-        .split('/')
-        .next_back()
-        .map(|s| s.trim_end_matches(".git"))
-        .unwrap_or("repo")
-        .to_string()
 }
 
 /// Extract repository name from a GitLab MR URL
