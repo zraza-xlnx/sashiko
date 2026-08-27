@@ -116,6 +116,11 @@ enabled = true
 # Set to 'false' if you need to monitor both mailing lists and forges.
 disable_nntp = true
 
+# Review every push to a PR independently instead of once per PR.
+# WARNING: each push triggers a full review and spends additional LLM/API
+# budget. Leave false unless you specifically want per-push reviews.
+review_each_push = false
+
 # Global Config: Map file paths to subsystems for targeted reviews (Optional)
 [subsystems]
 mapping = [
