@@ -6,6 +6,8 @@ description = ""
 
 [forge]
 enabled = false
+# review_each_push = false   # true = review every push to a PR (not just once per PR).
+#                            # WARNING: each push triggers a full review = extra LLM/API cost.
 # provider = "github"
 # api_token = "your-api-token"
 
