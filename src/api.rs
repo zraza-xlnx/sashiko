@@ -1236,9 +1236,18 @@ async fn forge_webhook(
     let commit_range = format!("{}..{}", metadata.base_sha, metadata.head_sha);
     let placeholder_id = format!("mr-{}-{}", metadata.pr_number, commit_range);
 
+    // Only review each push when forge is enabled AND the review_each_push
+    // flag is set.
+    let review_each_push = state.settings.forge.enabled && state.settings.forge.review_each_push;
+
     let slug = metadata.pr_url.as_ref().map(|url| {
         let repo = crate::forge::extract_repo_name_from_url(url);
-        format!("{}-{}", repo, metadata.pr_number)
+        if review_each_push {
+            let short_head = &metadata.head_sha[..metadata.head_sha.len().min(12)];
+            format!("{}-{}-{}", repo, metadata.pr_number, short_head)
+        } else {
+            format!("{}-{}", repo, metadata.pr_number)
+        }
     });
 
     state

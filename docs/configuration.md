@@ -23,6 +23,7 @@ Optional. Controls forge (GitHub/GitLab) webhook integration.
 |-----|------|---------|-------------|
 | `enabled` | bool | `false` | Enable forge webhook endpoint. |
 | `disable_nntp` | bool | `true` | Disable NNTP ingestion when forge is enabled. |
+| `review_each_push` | bool | `false` | Review every push to a PR/MR independently instead of once per PR. Only honored when `enabled = true`. **Increases LLM/API cost**, as each push triggers a full review. |
 | `provider` | string | -- | Forge provider: `"github"` or `"gitlab"`. |
 | `webhook_secret` | string | -- | Webhook signing token or shared secret for authenticating incoming requests. When configured, non-localhost requests are authenticated via signature verification. See the [Webhook Security Guide](WEBHOOK_SECURITY.md). |
 | `api_token` | string | -- | Forge API token (for future API-based features). |
