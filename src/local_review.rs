@@ -46,7 +46,7 @@ pub struct WorkerOptions {
     pub reuse_worktree: Option<PathBuf>,
     pub ai_provider: Option<String>,
     pub custom_prompt: Option<String>,
-    pub stages: Option<Vec<u8>>,
+    pub stages: Option<Vec<String>>,
     pub scratch_clone: bool,
     pub current_tree: bool,
 }
@@ -80,7 +80,7 @@ pub struct ReviewOptions {
     pub no_ai: bool,
     pub ai_provider: Option<String>,
     pub custom_prompt: Option<String>,
-    pub stages: Option<Vec<u8>>,
+    pub stages: Option<Vec<String>>,
 }
 
 impl Default for ReviewOptions {
@@ -138,21 +138,21 @@ pub enum ProgressEvent {
     },
     AiReviewPlanReady {
         patch_index: i64,
-        planned_stages: Vec<u8>,
+        planned_stages: Vec<String>,
     },
     AiReviewStageStarted {
         patch_index: i64,
-        stage: u8,
+        stage: String,
     },
     AiReviewStageTurn {
         patch_index: i64,
-        stage: u8,
+        stage: String,
         turn: usize,
         max_turns: usize,
     },
     AiReviewStageFinished {
         patch_index: i64,
-        stage: u8,
+        stage: String,
     },
     AiReviewAttempt {
         patch_index: i64,
@@ -509,7 +509,8 @@ async fn review_single_patch(
         let provider =
             crate::ai::create_provider_from_ai(ai).context("Failed to create AI provider")?;
         let provider = decorate_provider(provider, ai, llm_semaphore, quota, &retry_budget);
-        let prompts_tool_path = Some(options.prompts.join("tool.md"));
+        // The directory itself: read_prompt resolves a name against it.
+        let prompts_tool_path = Some(options.prompts.clone());
 
         let mut patch_files = Vec::new();
         if let Some(sha) = patch_shas.get(&p.index) {
