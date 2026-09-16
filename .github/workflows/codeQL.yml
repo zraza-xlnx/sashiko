@@ -1,0 +1,30 @@
+name: CodeQL (AMD SDL)
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  analyze:
+    name: CodeQL Analyze (Rust)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: rust
+          queries: security-extended        # AMD-required query suite (§9.2.1.1)
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:rust'

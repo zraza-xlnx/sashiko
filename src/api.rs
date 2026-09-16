@@ -1005,6 +1005,8 @@ async fn get_stats(
     let reviewing = crate::metrics::get_reviewing_patches();
     let messages = crate::metrics::get_messages();
     let patchsets = crate::metrics::get_patchsets();
+    let repo_packs = crate::metrics::get_repo_packs();
+    let repo_pack_bytes = crate::metrics::get_repo_pack_bytes();
 
     Ok(Json(serde_json::json!({
         "status": "ok",
@@ -1012,7 +1014,9 @@ async fn get_stats(
         "pending": pending,
         "reviewing": reviewing,
         "messages": messages,
-        "patchsets": patchsets
+        "patchsets": patchsets,
+        "repo_packs": repo_packs,
+        "repo_pack_bytes": repo_pack_bytes
     })))
 }
 
@@ -1236,7 +1240,7 @@ async fn forge_webhook(
     // flag is set.
     let review_each_push = state.settings.forge.enabled && state.settings.forge.review_each_push;
 
-    let slug = metadata.pr_url.as_ref().map(|url| {
+    let slug = metadata.repo_url.as_ref().map(|url| {
         let repo = crate::forge::extract_repo_name_from_url(url);
         if review_each_push {
             let short_head = &metadata.head_sha[..metadata.head_sha.len().min(12)];
