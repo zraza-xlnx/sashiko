@@ -53,6 +53,11 @@ pub struct ForgeSettings {
     pub provider: Option<String>,
     pub webhook_secret: Option<String>,
     pub api_token: Option<String>,
+    /// When true, each push to a PR/MR is reviewed independently instead of
+    /// once per PR. The slug includes the short head SHA so every push maps to
+    /// its own patchset. Only honored when forge `enabled` is also true.
+    #[serde(default)]
+    pub review_each_push: bool,
 }
 
 fn default_true() -> bool {
@@ -527,6 +532,7 @@ fn default_forge() -> ForgeSettings {
         provider: None,
         webhook_secret: None,
         api_token: None,
+        review_each_push: false,
     }
 }
 
